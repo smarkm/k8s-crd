@@ -1,0 +1,26 @@
+# permissions to do edit stewards.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: steward-editor-role
+rules:
+- apiGroups:
+  - oam.crd.fp.net
+  resources:
+  - stewards
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - oam.crd.fp.net
+  resources:
+  - stewards/status
+  verbs:
+  - get
+  - patch
+  - update
