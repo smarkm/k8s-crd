@@ -1,0 +1,7 @@
+apiVersion: oam.fp.net/v1
+kind: Steward
+metadata:
+  name: steward-sample
+spec:
+  # Add fields here
+  foo: bar

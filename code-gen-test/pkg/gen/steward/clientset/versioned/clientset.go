@@ -19,7 +19,7 @@ package versioned
 import (
 	"fmt"
 
-	stewardv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1"
+	oamv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -27,19 +27,19 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	StewardV1() stewardv1.StewardV1Interface
+	OamV1() oamv1.OamV1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	stewardV1 *stewardv1.StewardV1Client
+	oamV1 *oamv1.OamV1Client
 }
 
-// StewardV1 retrieves the StewardV1Client
-func (c *Clientset) StewardV1() stewardv1.StewardV1Interface {
-	return c.stewardV1
+// OamV1 retrieves the OamV1Client
+func (c *Clientset) OamV1() oamv1.OamV1Interface {
+	return c.oamV1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -57,13 +57,13 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	configShallowCopy := *c
 	if configShallowCopy.RateLimiter == nil && configShallowCopy.QPS > 0 {
 		if configShallowCopy.Burst <= 0 {
-			return nil, fmt.Errorf("burst is required to be greater than 0 when RateLimiter is not set and QPS is set to greater than 0")
+			return nil, fmt.Errorf("Burst is required to be greater than 0 when RateLimiter is not set and QPS is set to greater than 0")
 		}
 		configShallowCopy.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(configShallowCopy.QPS, configShallowCopy.Burst)
 	}
 	var cs Clientset
 	var err error
-	cs.stewardV1, err = stewardv1.NewForConfig(&configShallowCopy)
+	cs.oamV1, err = oamv1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.stewardV1 = stewardv1.NewForConfigOrDie(c)
+	cs.oamV1 = oamv1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -88,7 +88,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.stewardV1 = stewardv1.New(c)
+	cs.oamV1 = oamv1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

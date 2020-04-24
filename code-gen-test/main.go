@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"time"
 
 	stewardclientset "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned"
@@ -14,8 +15,12 @@ import (
 
 func main() {
 	klog.InitFlags(nil)
-	masterUrl := ""
-	kubeconfigPath := ""
+	var masterUrl string
+	var kubeconfigPath string
+	flag.StringVar(&masterUrl, "url", "", "master url")
+	flag.StringVar(&kubeconfigPath, "config", "", "kube config")
+	flag.Parse()
+
 	stopCh := signals.SetupSignalHandler()
 	cfg, err := clientcmd.BuildConfigFromFlags(masterUrl, kubeconfigPath)
 	if err != nil {
@@ -34,7 +39,7 @@ func main() {
 	stewardInformerFactory := stewardinformers.NewSharedInformerFactory(stewardclient, time.Second*1)
 	controller := NewController(kclient, stewardclient,
 		kInformerFactory.Apps().V1().Deployments(),
-		stewardInformerFactory.Steward().V1().Stewards())
+		stewardInformerFactory.Oam().V1().Stewards())
 
 	kInformerFactory.Start(stopCh)
 	stewardInformerFactory.Start(stopCh)

@@ -2,5 +2,5 @@
 package v1
 
 const (
-	GroupName = "steward.oam.fp.net"
+	GroupName = "oam.fp.net"
 )

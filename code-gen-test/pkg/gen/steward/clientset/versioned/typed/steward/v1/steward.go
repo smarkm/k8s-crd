@@ -17,7 +17,6 @@ limitations under the License.
 package v1
 
 import (
-	"context"
 	"time"
 
 	v1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/apis/steward/v1"
@@ -36,14 +35,14 @@ type StewardsGetter interface {
 
 // StewardInterface has methods to work with Steward resources.
 type StewardInterface interface {
-	Create(ctx context.Context, steward *v1.Steward, opts metav1.CreateOptions) (*v1.Steward, error)
-	Update(ctx context.Context, steward *v1.Steward, opts metav1.UpdateOptions) (*v1.Steward, error)
-	Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error
-	DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error
-	Get(ctx context.Context, name string, opts metav1.GetOptions) (*v1.Steward, error)
-	List(ctx context.Context, opts metav1.ListOptions) (*v1.StewardList, error)
-	Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error)
-	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *v1.Steward, err error)
+	Create(*v1.Steward) (*v1.Steward, error)
+	Update(*v1.Steward) (*v1.Steward, error)
+	Delete(name string, options *metav1.DeleteOptions) error
+	DeleteCollection(options *metav1.DeleteOptions, listOptions metav1.ListOptions) error
+	Get(name string, options metav1.GetOptions) (*v1.Steward, error)
+	List(opts metav1.ListOptions) (*v1.StewardList, error)
+	Watch(opts metav1.ListOptions) (watch.Interface, error)
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1.Steward, err error)
 	StewardExpansion
 }
 
@@ -54,7 +53,7 @@ type stewards struct {
 }
 
 // newStewards returns a Stewards
-func newStewards(c *StewardV1Client, namespace string) *stewards {
+func newStewards(c *OamV1Client, namespace string) *stewards {
 	return &stewards{
 		client: c.RESTClient(),
 		ns:     namespace,
@@ -62,20 +61,20 @@ func newStewards(c *StewardV1Client, namespace string) *stewards {
 }
 
 // Get takes name of the steward, and returns the corresponding steward object, and an error if there is any.
-func (c *stewards) Get(ctx context.Context, name string, options metav1.GetOptions) (result *v1.Steward, err error) {
+func (c *stewards) Get(name string, options metav1.GetOptions) (result *v1.Steward, err error) {
 	result = &v1.Steward{}
 	err = c.client.Get().
 		Namespace(c.ns).
 		Resource("stewards").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do(ctx).
+		Do().
 		Into(result)
 	return
 }
 
 // List takes label and field selectors, and returns the list of Stewards that match those selectors.
-func (c *stewards) List(ctx context.Context, opts metav1.ListOptions) (result *v1.StewardList, err error) {
+func (c *stewards) List(opts metav1.ListOptions) (result *v1.StewardList, err error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -86,13 +85,13 @@ func (c *stewards) List(ctx context.Context, opts metav1.ListOptions) (result *v
 		Resource("stewards").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do(ctx).
+		Do().
 		Into(result)
 	return
 }
 
 // Watch returns a watch.Interface that watches the requested stewards.
-func (c *stewards) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+func (c *stewards) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	var timeout time.Duration
 	if opts.TimeoutSeconds != nil {
 		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
@@ -103,74 +102,71 @@ func (c *stewards) Watch(ctx context.Context, opts metav1.ListOptions) (watch.In
 		Resource("stewards").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch(ctx)
+		Watch()
 }
 
 // Create takes the representation of a steward and creates it.  Returns the server's representation of the steward, and an error, if there is any.
-func (c *stewards) Create(ctx context.Context, steward *v1.Steward, opts metav1.CreateOptions) (result *v1.Steward, err error) {
+func (c *stewards) Create(steward *v1.Steward) (result *v1.Steward, err error) {
 	result = &v1.Steward{}
 	err = c.client.Post().
 		Namespace(c.ns).
 		Resource("stewards").
-		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(steward).
-		Do(ctx).
+		Do().
 		Into(result)
 	return
 }
 
 // Update takes the representation of a steward and updates it. Returns the server's representation of the steward, and an error, if there is any.
-func (c *stewards) Update(ctx context.Context, steward *v1.Steward, opts metav1.UpdateOptions) (result *v1.Steward, err error) {
+func (c *stewards) Update(steward *v1.Steward) (result *v1.Steward, err error) {
 	result = &v1.Steward{}
 	err = c.client.Put().
 		Namespace(c.ns).
 		Resource("stewards").
 		Name(steward.Name).
-		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(steward).
-		Do(ctx).
+		Do().
 		Into(result)
 	return
 }
 
 // Delete takes name of the steward and deletes it. Returns an error if one occurs.
-func (c *stewards) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+func (c *stewards) Delete(name string, options *metav1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("stewards").
 		Name(name).
-		Body(&opts).
-		Do(ctx).
+		Body(options).
+		Do().
 		Error()
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *stewards) DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error {
+func (c *stewards) DeleteCollection(options *metav1.DeleteOptions, listOptions metav1.ListOptions) error {
 	var timeout time.Duration
-	if listOpts.TimeoutSeconds != nil {
-		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
+	if listOptions.TimeoutSeconds != nil {
+		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
 		Namespace(c.ns).
 		Resource("stewards").
-		VersionedParams(&listOpts, scheme.ParameterCodec).
+		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
-		Body(&opts).
-		Do(ctx).
+		Body(options).
+		Do().
 		Error()
 }
 
 // Patch applies the patch and returns the patched steward.
-func (c *stewards) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *v1.Steward, err error) {
+func (c *stewards) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1.Steward, err error) {
 	result = &v1.Steward{}
 	err = c.client.Patch(pt).
 		Namespace(c.ns).
 		Resource("stewards").
-		Name(name).
 		SubResource(subresources...).
-		VersionedParams(&opts, scheme.ParameterCodec).
+		Name(name).
 		Body(data).
-		Do(ctx).
+		Do().
 		Into(result)
 	return
 }

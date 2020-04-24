@@ -17,8 +17,6 @@ limitations under the License.
 package fake
 
 import (
-	"context"
-
 	stewardv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/apis/steward/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
@@ -30,16 +28,16 @@ import (
 
 // FakeStewards implements StewardInterface
 type FakeStewards struct {
-	Fake *FakeStewardV1
+	Fake *FakeOamV1
 	ns   string
 }
 
-var stewardsResource = schema.GroupVersionResource{Group: "steward.oam.fp.net", Version: "v1", Resource: "stewards"}
+var stewardsResource = schema.GroupVersionResource{Group: "oam.fp.net", Version: "v1", Resource: "stewards"}
 
-var stewardsKind = schema.GroupVersionKind{Group: "steward.oam.fp.net", Version: "v1", Kind: "Steward"}
+var stewardsKind = schema.GroupVersionKind{Group: "oam.fp.net", Version: "v1", Kind: "Steward"}
 
 // Get takes name of the steward, and returns the corresponding steward object, and an error if there is any.
-func (c *FakeStewards) Get(ctx context.Context, name string, options v1.GetOptions) (result *stewardv1.Steward, err error) {
+func (c *FakeStewards) Get(name string, options v1.GetOptions) (result *stewardv1.Steward, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(stewardsResource, c.ns, name), &stewardv1.Steward{})
 
@@ -50,7 +48,7 @@ func (c *FakeStewards) Get(ctx context.Context, name string, options v1.GetOptio
 }
 
 // List takes label and field selectors, and returns the list of Stewards that match those selectors.
-func (c *FakeStewards) List(ctx context.Context, opts v1.ListOptions) (result *stewardv1.StewardList, err error) {
+func (c *FakeStewards) List(opts v1.ListOptions) (result *stewardv1.StewardList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(stewardsResource, stewardsKind, c.ns, opts), &stewardv1.StewardList{})
 
@@ -72,14 +70,14 @@ func (c *FakeStewards) List(ctx context.Context, opts v1.ListOptions) (result *s
 }
 
 // Watch returns a watch.Interface that watches the requested stewards.
-func (c *FakeStewards) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeStewards) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(stewardsResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a steward and creates it.  Returns the server's representation of the steward, and an error, if there is any.
-func (c *FakeStewards) Create(ctx context.Context, steward *stewardv1.Steward, opts v1.CreateOptions) (result *stewardv1.Steward, err error) {
+func (c *FakeStewards) Create(steward *stewardv1.Steward) (result *stewardv1.Steward, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(stewardsResource, c.ns, steward), &stewardv1.Steward{})
 
@@ -90,7 +88,7 @@ func (c *FakeStewards) Create(ctx context.Context, steward *stewardv1.Steward, o
 }
 
 // Update takes the representation of a steward and updates it. Returns the server's representation of the steward, and an error, if there is any.
-func (c *FakeStewards) Update(ctx context.Context, steward *stewardv1.Steward, opts v1.UpdateOptions) (result *stewardv1.Steward, err error) {
+func (c *FakeStewards) Update(steward *stewardv1.Steward) (result *stewardv1.Steward, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(stewardsResource, c.ns, steward), &stewardv1.Steward{})
 
@@ -101,7 +99,7 @@ func (c *FakeStewards) Update(ctx context.Context, steward *stewardv1.Steward, o
 }
 
 // Delete takes name of the steward and deletes it. Returns an error if one occurs.
-func (c *FakeStewards) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
+func (c *FakeStewards) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(stewardsResource, c.ns, name), &stewardv1.Steward{})
 
@@ -109,15 +107,15 @@ func (c *FakeStewards) Delete(ctx context.Context, name string, opts v1.DeleteOp
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeStewards) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(stewardsResource, c.ns, listOpts)
+func (c *FakeStewards) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(stewardsResource, c.ns, listOptions)
 
 	_, err := c.Fake.Invokes(action, &stewardv1.StewardList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched steward.
-func (c *FakeStewards) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *stewardv1.Steward, err error) {
+func (c *FakeStewards) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *stewardv1.Steward, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(stewardsResource, c.ns, name, pt, data, subresources...), &stewardv1.Steward{})
 

@@ -170,9 +170,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Steward() steward.Interface
+	Oam() steward.Interface
 }
 
-func (f *sharedInformerFactory) Steward() steward.Interface {
+func (f *sharedInformerFactory) Oam() steward.Interface {
 	return steward.New(f, f.namespace, f.tweakListOptions)
 }

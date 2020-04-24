@@ -1,5 +1,6 @@
 RootDir="github.com/smarkm/k8s-crd/code-gen-test"
 	CODEGEN="$(find /go/pkg/mod/k8s.io/ |grep generate-groups.sh| tail -1)"
+	chmod +x ${CODEGEN}
 	echo ">>> using codegen: ${CODEGEN}"
 	# ensure we can execute the codegen script
 	"${CODEGEN}" all \

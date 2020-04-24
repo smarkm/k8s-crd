@@ -18,8 +18,8 @@ package fake
 
 import (
 	clientset "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned"
-	stewardv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1"
-	fakestewardv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1/fake"
+	oamv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1"
+	fakeoamv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/gen/steward/clientset/versioned/typed/steward/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -74,7 +74,7 @@ func (c *Clientset) Tracker() testing.ObjectTracker {
 
 var _ clientset.Interface = &Clientset{}
 
-// StewardV1 retrieves the StewardV1Client
-func (c *Clientset) StewardV1() stewardv1.StewardV1Interface {
-	return &fakestewardv1.FakeStewardV1{Fake: &c.Fake}
+// OamV1 retrieves the OamV1Client
+func (c *Clientset) OamV1() oamv1.OamV1Interface {
+	return &fakeoamv1.FakeOamV1{Fake: &c.Fake}
 }

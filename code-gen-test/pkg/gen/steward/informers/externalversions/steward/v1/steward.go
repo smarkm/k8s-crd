@@ -17,7 +17,6 @@ limitations under the License.
 package v1
 
 import (
-	"context"
 	time "time"
 
 	stewardv1 "github.com/smarkm/k8s-crd/code-gen-test/pkg/apis/steward/v1"
@@ -60,13 +59,13 @@ func NewFilteredStewardInformer(client versioned.Interface, namespace string, re
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.StewardV1().Stewards(namespace).List(context.TODO(), options)
+				return client.OamV1().Stewards(namespace).List(options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.StewardV1().Stewards(namespace).Watch(context.TODO(), options)
+				return client.OamV1().Stewards(namespace).Watch(options)
 			},
 		},
 		&stewardv1.Steward{},
